@@ -1,0 +1,15 @@
+## Interface: 16001
+## Title: PureGrid
+## Notes: Lightweight, toggleable screen alignment grid for WoW Forever. Adjust spacing, thickness, opacity, and layer anytime.
+## Author: WorthyPenguin
+## Version: 1.0.0
+## Category: UI
+## IconTexture: Interface\Icons\INV_Misc_Net_01
+## SavedVariables: PureGridDB
+## X-Curse-Project-ID: 1824569
+
+Defaults.lua
+Grid.lua
+MinimapButton.lua
+UI.lua
+PureGrid.lua

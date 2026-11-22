@@ -1,0 +1,7 @@
+<Bindings>
+	<Binding name="PUREGRID_TOGGLE" header="PUREGRID" category="ADDONS">
+		if PureGrid_ToggleGrid then
+			PureGrid_ToggleGrid()
+		end
+	</Binding>
+</Bindings>
