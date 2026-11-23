@@ -69,7 +69,7 @@ function ns.BuildDefaultGeneral()
 		-- Grid Appearance
 		gridSize          = 8,        -- 8..256 px spacing between grid lines
 		lineThickness     = 1,        -- 1..4 px physical pixel line thickness
-		gridAlpha         = 0.10,     -- 0.10..1.00 opacity
+		gridAlpha         = 0.20,     -- 0.10..1.00 opacity
 		strata            = "HIGH",   -- Frame strata
 		gridColor         = { r = 1.0, g = 1.0, b = 1.0 },
 		centerColor       = { r = 1.0, g = 0.15, b = 0.15 },

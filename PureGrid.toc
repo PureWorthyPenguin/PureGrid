@@ -2,7 +2,7 @@
 ## Title: PureGrid
 ## Notes: Lightweight, toggleable screen alignment grid for WoW Forever. Adjust spacing, thickness, opacity, and layer anytime.
 ## Author: WorthyPenguin
-## Version: 1.0.0
+## Version: 1.0.1
 ## Category: UI
 ## IconTexture: Interface\Icons\INV_Misc_Net_01
 ## SavedVariables: PureGridDB

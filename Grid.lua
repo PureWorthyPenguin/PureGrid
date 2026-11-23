@@ -110,7 +110,7 @@ function ns.RebuildGrid()
 	local thickness = math.max(1, math.min(4, math.floor((db.lineThickness or 1) + 0.5)))
 	local lineSize = thickness + 0.15
 	local halfPx = (thickness % 2 == 1) and 0.5 or 0.0
-	local alpha = math.max(0.10, math.min(1.00, db.gridAlpha or 0.10))
+	local alpha = math.max(0.10, math.min(1.00, db.gridAlpha or 0.20))
 
 	local centerX = math.floor(width * 0.5)
 	local centerY = math.floor(height * 0.5)

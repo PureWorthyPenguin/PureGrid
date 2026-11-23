@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.1
+
+- Increased default grid opacity from `10%` to `20%` for better visibility out of the box.
+
 ## v1.0.0
 
 - Initial release of **PureGrid** for World of Warcraft Forever (`16001`).
