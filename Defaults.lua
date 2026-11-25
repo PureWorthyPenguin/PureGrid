@@ -61,7 +61,7 @@ for _, opt in ipairs(ns.STRATA_OPTIONS) do
 	ns.STRATA_LABEL_BY_VALUE[opt.value] = opt.label
 end
 
-ns.DEFAULT_MINIMAP_ANGLE = 220
+ns.DEFAULT_MINIMAP_ANGLE = 211
 
 -- Default settings
 function ns.BuildDefaultGeneral()

@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.2
+
+- Adjusted default Minimap button position (`211°`) to sit neatly alongside PureFade and avoid colliding with other popular addons' Minimap buttons.
+
 ## v1.0.1
 
 - Increased default grid opacity from `10%` to `20%` for better visibility out of the box.
