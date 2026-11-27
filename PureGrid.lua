@@ -9,7 +9,7 @@ local function MergeDefaults(db)
 			db[k] = ns.DeepCopy(v)
 		elseif type(v) == "table" and type(db[k]) ~= "table" then
 			db[k] = ns.DeepCopy(v)
-		elseif type(v) == "table" and type(db[k]) == "table" then
+		elseif type(v) == "table" and type(db[k]) == "table" and k ~= "guides" then
 			for subK, subV in pairs(v) do
 				if db[k][subK] == nil then
 					db[k][subK] = subV
@@ -38,6 +38,8 @@ function ns.ResetDefaults()
 	local lastShown = PureGridDB and PureGridDB.lastGridShown or false
 	PureGridDB = ns.BuildDefaultGeneral()
 	PureGridDB.lastGridShown = lastShown
+	if ns.SetGuideEditMode then ns.SetGuideEditMode(false) end
+	if ns.ResetQuickBarPosition then ns.ResetQuickBarPosition() end
 	print("|cff66ccffPureGrid:|r All settings reset to defaults.")
 end
 
@@ -137,15 +139,66 @@ end
 -- Slash command: /puregrid
 SLASH_PUREGRID1 = "/puregrid"
 SlashCmdList["PUREGRID"] = function(msg)
-	local cmd = strtrim((msg or ""):lower())
+	local raw = strtrim((msg or ""):lower())
+	local cmd, arg = raw:match("^(%S+)%s*(.*)$")
+	cmd = cmd or ""
+
+	local numericSpacing = tonumber(raw)
+	if numericSpacing then
+		local clamped = math.max(8, math.min(256, math.floor((numericSpacing / 2) + 0.5) * 2))
+		PureGridDB.gridSize = clamped
+		if ns.ForceRefresh then ns.ForceRefresh() end
+		if ns.RefreshUI then ns.RefreshUI() end
+		print("|cff66ccffPureGrid:|r Grid spacing set to |cffffff00" .. clamped .. " px|r.")
+		return
+	end
+
 	if cmd == "toggle" then
 		if ns.ToggleGrid then ns.ToggleGrid() end
 	elseif cmd == "on" or cmd == "show" then
 		if ns.SetGridShown then ns.SetGridShown(true) end
 	elseif cmd == "off" or cmd == "hide" then
 		if ns.SetGridShown then ns.SetGridShown(false) end
+	elseif cmd == "alpha" or cmd == "opacity" then
+		local pct = tonumber(arg)
+		if pct then
+			local clamped = math.max(10, math.min(100, math.floor((pct / 5) + 0.5) * 5))
+			PureGridDB.gridAlpha = clamped / 100
+			if ns.ForceRefresh then ns.ForceRefresh() end
+			if ns.RefreshUI then ns.RefreshUI() end
+			print("|cff66ccffPureGrid:|r Grid opacity set to |cffffff00" .. clamped .. "%|r.")
+		else
+			print("|cff66ccffPureGrid:|r Usage: |cffffff00/puregrid alpha 10-100|r (e.g. /puregrid alpha 25)")
+		end
+	elseif cmd == "crosshair" or cmd == "cross" then
+		PureGridDB.crosshairOnly = not PureGridDB.crosshairOnly
+		if ns.ForceRefresh then ns.ForceRefresh() end
+		if ns.RefreshUI then ns.RefreshUI() end
+		print("|cff66ccffPureGrid:|r Center Crosshair-Only mode " .. (PureGridDB.crosshairOnly and "|cff66ff66ON|r." or "|cffff6666OFF|r."))
+	elseif cmd == "snap" then
+		PureGridDB.snapToGrid = not PureGridDB.snapToGrid
+		if ns.UpdateQuickBar then ns.UpdateQuickBar() end
+		if ns.RefreshUI then ns.RefreshUI() end
+		print("|cff66ccffPureGrid:|r Snap-on-Drop " .. (PureGridDB.snapToGrid and "|cff66ff66ON|r." or "|cffff6666OFF|r."))
+	elseif cmd == "guides" or cmd == "guide" then
+		if ns.SetGuideEditMode and ns.IsGuideEditMode then
+			local nextState = not ns.IsGuideEditMode()
+			ns.SetGuideEditMode(nextState)
+			print("|cff66ccffPureGrid:|r Custom Guide Edit Mode " .. (nextState and "|cff66ff66UNLOCKED|r." or "|cffff6666LOCKED|r."))
+		end
 	elseif cmd == "reset" then
 		if ns.ResetMinimapButtonPosition then ns.ResetMinimapButtonPosition() end
+		if ns.ResetQuickBarPosition then ns.ResetQuickBarPosition() end
+	elseif cmd == "help" then
+		print("|cff66ccffPureGrid Commands:|r")
+		print("  |cffffff00/puregrid|r - Open Settings")
+		print("  |cffffff00/puregrid toggle|r | |cffffff00on|r | |cffffff00off|r - Toggle, show, or hide grid")
+		print("  |cffffff00/puregrid <8-256>|r - Set grid spacing (e.g. /puregrid 32)")
+		print("  |cffffff00/puregrid alpha <10-100>|r - Set grid opacity (e.g. /puregrid alpha 25)")
+		print("  |cffffff00/puregrid crosshair|r - Toggle Center Crosshair-Only mode")
+		print("  |cffffff00/puregrid snap|r - Toggle Snap-on-Drop for addon frames")
+		print("  |cffffff00/puregrid guides|r - Lock/unlock custom guide drag handles")
+		print("  |cffffff00/puregrid reset|r - Reset Minimap button & Quick-Bar positions")
 	else
 		if ns.OpenSettings then ns.OpenSettings() end
 	end
@@ -160,10 +213,20 @@ boot:SetScript("OnEvent", function(_, event, arg1)
 		if arg1 == ADDON_NAME then
 			InitSavedVariables()
 			ns.InitUI()
+		elseif arg1 == "Blizzard_EditMode" then
+			if ns.TryHookEditMode then ns.TryHookEditMode() end
 		end
 	elseif event == "PLAYER_LOGIN" then
-		ns.InitGrid()
-		ns.InitMinimapButton()
-		ns.UpdateCompartmentButton()
+		local function SafeCall(label, fn)
+			if type(fn) ~= "function" then return end
+			local ok, err = pcall(fn)
+			if not ok then
+				print("|cff66ccffPureGrid:|r |cffff6666Error in " .. label .. ":|r " .. tostring(err))
+			end
+		end
+		SafeCall("InitGrid", ns.InitGrid)
+		SafeCall("InitQuickBar", ns.InitQuickBar)
+		SafeCall("InitMinimapButton", ns.InitMinimapButton)
+		SafeCall("UpdateCompartmentButton", ns.UpdateCompartmentButton)
 	end
 end)
